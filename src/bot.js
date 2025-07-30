@@ -1,8 +1,9 @@
+// src/bot.js
 function botDecision(gameState) {
-  const pos = gameState.position || { x: 0, y: 0 };
+  const pos = gameState.position || { x: 1, y: 1 };  // Évite 0,0 par défaut
   const megaPoint = gameState.megaPoint || { x: 5, y: 5 };
   const enemies = gameState.enemies || [];
-  const bombsLeft = gameState.bombs || 1;
+  const bombsLeft = gameState.bombs ?? 1;  // supporte 0
   const items = gameState.items || [];
 
   const movesAndActions = {
@@ -13,13 +14,13 @@ function botDecision(gameState) {
     STAY: "BOMB"
   };
 
-  // 👀 Si on est sur une case (0,0), le bot panique et fait n’importe quoi
+  // Panique si vraiment en 0,0 (rare)
   if (pos.x === 0 && pos.y === 0) {
     console.log("😱 Le bot est dans un coin... il panique !");
     return { move: "RIGHT", action: "NONE" };
   }
 
-  // 🎯 Si on est à une case du megaPoint, on se rue dessus
+  // Si on est à une case du megaPoint, on va vers lui
   const distToMega = Math.abs(pos.x - megaPoint.x) + Math.abs(pos.y - megaPoint.y);
   if (distToMega === 1) {
     console.log("🏃 Le bot fonce vers le megaPoint !");
@@ -29,7 +30,7 @@ function botDecision(gameState) {
     if (pos.y > megaPoint.y) return { move: "UP", action: "NONE" };
   }
 
-  // 💥 Si un ennemi est adjacent, on attaque
+  // Attaque si ennemi adjacent
   const isEnemyAdjacent = enemies.some(e =>
     Math.abs(e.x - pos.x) + Math.abs(e.y - pos.y) === 1
   );
@@ -38,7 +39,7 @@ function botDecision(gameState) {
     return { move: "STAY", action: "ATTACK" };
   }
 
-  // 🎁 Si un item est adjacent, on le ramasse
+  // Collecte item adjacent
   const adjacentItem = items.find(item =>
     Math.abs(item.x - pos.x) + Math.abs(item.y - pos.y) === 1
   );
@@ -50,13 +51,13 @@ function botDecision(gameState) {
     if (adjacentItem.y < pos.y) return { move: "UP", action: "COLLECT" };
   }
 
-  // 💣 Si le bot s'ennuie, il pose une bombe juste pour le style
-  if (bombsLeft > 0 && Math.random() < 0.05) {
+  // Pose bombe aléatoirement si on a des bombes
+  if (bombsLeft > 0 && Math.random() < 0.2) {  // 20% au lieu de 5%
     console.log("🧨 Le bot s'ennuie... BAM !");
     return { move: "STAY", action: "BOMB" };
   }
 
-  // 🎲 Sinon, comportement aléatoire
+  // Sinon, se déplace aléatoirement mais évite de rester bloqué trop longtemps
   const directions = ["DOWN", "UP", "LEFT", "RIGHT", "STAY"];
   const move = directions[Math.floor(Math.random() * directions.length)];
   const action = movesAndActions[move];
