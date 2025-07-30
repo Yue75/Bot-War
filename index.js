@@ -1,4 +1,3 @@
-// index.js
 const express = require("express");
 const cors = require("cors");
 const app = express();
@@ -9,17 +8,17 @@ const botDecision = require("./src/bot");
 app.use(cors());
 app.use(express.json());
 
-// Route utilisée par GoGoKodo
+// GET /action
 app.get("/action", (req, res) => {
   console.log("GET /action called");
-  const decision = botDecision({}); // Aucun body en GET
+  const decision = botDecision({});
   res.json(decision);
 });
 
-// Route POST facultative pour tes tests locaux
+// POST /action
 app.post("/action", (req, res) => {
   try {
-    console.log("POST /action with body:", req.body);
+    console.log("POST /action called with body:", req.body);
     const gameState = typeof req.body === "object" && req.body !== null ? req.body : {};
     const decision = botDecision(gameState);
     res.json(decision);
@@ -29,7 +28,7 @@ app.post("/action", (req, res) => {
   }
 });
 
-// Page d'accueil
+// Homepage
 app.get("/", (req, res) => {
   res.send("🤖 Bot-War running. Use GET or POST /action");
 });

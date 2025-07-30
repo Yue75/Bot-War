@@ -1,5 +1,3 @@
-// src/bot.js
-
 function botDecision(gameState) {
   const pos = gameState.position || { x: 0, y: 0 };
   const megaPoint = gameState.megaPoint || { x: 5, y: 5 };
@@ -8,8 +6,8 @@ function botDecision(gameState) {
   const items = gameState.items || [];
 
   const movesAndActions = {
-    UP: "COLLECT",
     DOWN: "NONE",
+    UP: "COLLECT",
     LEFT: "COLLECT",
     RIGHT: "COLLECT",
     STAY: "BOMB"
@@ -58,8 +56,8 @@ function botDecision(gameState) {
     return { move: "STAY", action: "BOMB" };
   }
 
-  // 🎲 Sinon, comportement aléatoire (comme avant)
-  const directions = ["UP", "DOWN", "LEFT", "RIGHT", "STAY"];
+  // 🎲 Sinon, comportement aléatoire
+  const directions = ["DOWN", "UP", "LEFT", "RIGHT", "STAY"];
   const move = directions[Math.floor(Math.random() * directions.length)];
   const action = movesAndActions[move];
 
