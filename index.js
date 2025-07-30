@@ -18,10 +18,15 @@ app.get("/action", (req, res) => {
 
 // Route POST facultative pour tes tests locaux
 app.post("/action", (req, res) => {
-  console.log("POST /action with body:", req.body);
-  const gameState = req.body || {};
-  const decision = botDecision(gameState);
-  res.json(decision);
+  try {
+    console.log("POST /action with body:", req.body);
+    const gameState = typeof req.body === "object" && req.body !== null ? req.body : {};
+    const decision = botDecision(gameState);
+    res.json(decision);
+  } catch (err) {
+    console.error("Error handling POST /action:", err);
+    res.status(500).json({ error: "Internal bot error" });
+  }
 });
 
 // Page d'accueil

@@ -1,59 +1,69 @@
+// __tests__/bot.test.js
 const botDecision = require("../src/bot");
 
-describe("Bot Decision Tests", () => {
-  test("doit retourner un objet avec move et action", () => {
-    const gameState = {
-      position: { x: 1, y: 1 },
-      bombs: 3,
-      enemies: [{ x: 1, y: 2 }],
-      megaPoint: { x: 0, y: 0 },
-      items: [{ type: "point", x: 2, y: 1 }]
-    };
-
-    const decision = botDecision(gameState);
-
-    expect(decision).toHaveProperty("move");
-    expect(decision).toHaveProperty("action");
-
-    const validMoves = ["UP", "DOWN", "LEFT", "RIGHT", "STAY"];
-    const validActions = ["COLLECT", "ATTACK", "BOMB", "NONE"];
-
-    expect(validMoves).toContain(decision.move);
-    expect(validActions).toContain(decision.action);
+describe("Bot decision logic", () => {
+  test("🧠 Panique dans le coin (0,0)", () => {
+    const gameState = { position: { x: 0, y: 0 } };
+    const result = botDecision(gameState);
+    expect(result.move).toBe("RIGHT");
+    expect(result.action).toBe("NONE");
   });
 
-  test("attaque si ennemi adjacent", () => {
+  test("🎯 Fonce sur le megaPoint adjacent", () => {
     const gameState = {
-      position: { x: 1, y: 1 },
-      bombs: 3,
-      enemies: [{ x: 1, y: 2 }], // adjacent
-    };
-    const decision = botDecision(gameState);
-    expect(decision.action).toBe("ATTACK");
-    expect(decision.move).toBe("STAY");
-  });
-
-  test("pose bombe si au mega point et bombes dispo", () => {
-    const gameState = {
-      position: { x: 5, y: 5 },
-      bombs: 2,
-      enemies: [],
+      position: { x: 4, y: 5 },
       megaPoint: { x: 5, y: 5 }
     };
-    const decision = botDecision(gameState);
-    expect(decision.action).toBe("BOMB");
-    expect(decision.move).toBe("STAY");
+    const result = botDecision(gameState);
+    expect(result.move).toBe("RIGHT");
+    expect(result.action).toBe("NONE");
   });
 
-  test("se déplace vers un point s'il y a un item", () => {
+  test("⚔️ Attaque un ennemi adjacent", () => {
     const gameState = {
-      position: { x: 0, y: 0 },
-      bombs: 0,
-      enemies: [],
-      items: [{ type: "point", x: 1, y: 0 }]
+      position: { x: 2, y: 2 },
+      enemies: [{ x: 2, y: 3 }]
     };
-    const decision = botDecision(gameState);
-    expect(["RIGHT", "LEFT", "UP", "DOWN", "STAY"]).toContain(decision.move);
-    expect(["COLLECT", "NONE"]).toContain(decision.action);
+    const result = botDecision(gameState);
+    expect(result.move).toBe("STAY");
+    expect(result.action).toBe("ATTACK");
+  });
+
+  test("🎁 Collecte un item adjacent à droite", () => {
+    const gameState = {
+      position: { x: 1, y: 1 },
+      items: [{ x: 2, y: 1 }]
+    };
+    const result = botDecision(gameState);
+    expect(result.move).toBe("RIGHT");
+    expect(result.action).toBe("COLLECT");
+  });
+
+  test("🧨 Peut poser une bombe (stochastique)", () => {
+    const gameState = {
+      position: { x: 1, y: 1 },
+      bombs: 10
+    };
+
+    let bombCount = 0;
+    for (let i = 0; i < 200; i++) {
+      const result = botDecision(gameState);
+      if (result.action === "BOMB") {
+        bombCount++;
+      }
+    }
+    // Doit poser des bombes de temps en temps
+    expect(bombCount).toBeGreaterThan(0);
+  });
+
+  test("🎲 Fallback aléatoire donne une direction valide", () => {
+    const gameState = { position: { x: 10, y: 10 } };
+
+    const result = botDecision(gameState);
+    const validMoves = ["UP", "DOWN", "LEFT", "RIGHT", "STAY"];
+    const validActions = ["COLLECT", "NONE", "BOMB"];
+
+    expect(validMoves).toContain(result.move);
+    expect(validActions).toContain(result.action);
   });
 });
