@@ -1,0 +1,26 @@
+{
+  "name": "bot-war",
+  "version": "1.0.0",
+  "description": "Bot autonome pour l'arène Bot-War",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js",
+    "test": "jest"
+  },
+  "keywords": [
+    "bot",
+    "api",
+    "gogokodo",
+    "bot-war"
+  ],
+  "author": "Ton Nom",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "jest": "^30.0.5",
+    "supertest": "^7.1.4"
+  }
+}
