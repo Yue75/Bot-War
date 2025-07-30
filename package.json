@@ -14,7 +14,7 @@
     "gogokodo",
     "bot-war"
   ],
-  "author": "Ton Nom",
+  "author": "Antoine V",
   "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
